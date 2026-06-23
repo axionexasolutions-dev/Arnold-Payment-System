@@ -135,7 +135,7 @@ export async function generatePaymentLinkAction(prevState: any, formData: FormDa
     // Pass CHECKOUT_SESSION_ID placeholder to resolve complete details on checkout success redirect
     const successUrl = `${appUrl}/success?session_id={CHECKOUT_SESSION_ID}`;
 
-    // Create Stripe Payment Link redirecting to successUrl and gathering phone
+    // Create Stripe Payment Link redirecting to successUrl, gathering phone and restricting to single-use
     const paymentLink = await stripe.paymentLinks.create({
       line_items: [
         {
@@ -145,6 +145,11 @@ export async function generatePaymentLinkAction(prevState: any, formData: FormDa
       ],
       phone_number_collection: {
         enabled: true,
+      },
+      restrictions: {
+        completed_sessions: {
+          limit: 1,
+        },
       },
       after_completion: {
         type: "redirect",
